@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>introducing pkgcloud | node.js SDK for OpenStack</title>
+
+		<meta name="description" content="Introducing pkgcloud, a node.js SDK for OpenStack">
+		<meta name="author" content="Ken Perkins, Phani Raj">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+		<style type="text/css">
+			.reveal pre code {
+				padding: 15px;
+				max-height: inherit;
+				word-wrap: inherit;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>Introducing pkgcloud</h2>
+					<h3>OpenStack SDK for node.js</h3>
+					<p>
+						<small>
+							<a href="https://github.com/kenperkins">Ken Perkins</a> | Node.js Developer Advocate @ Rackspace | <a href="http://twitter.com/kenperkins">@kenperkins</a><br/>
+							<a href="https://github.com/phanatic">Phani Raj</a> | Senior Software Developer @ HP Cloud | <a href="http://twitter.com/phanirajuyn">@phanirajuyn</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>node.js</h2>
+					<p>Platform built on Chrome's V8 JavaScript runtime.</p>
+					<blockquote class="fragment">...uses an event-driven, non-blocking I/O model that makes it lightweight and efficient...</blockquote>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## Hello World in node.js
+
+						```javascript
+						var http = require('http');
+
+						var handler = function (req, res) {
+						  res.writeHead(200, {'Content-Type': 'text/plain'});
+						  res.end('Hello World\n');
+						}
+
+						var server = http.createServer(handler);
+
+						server.listen(1337, '127.0.0.1');
+
+						console.log('Server running at http://127.0.0.1:1337/');
+						```
+					</script>
+				</section>
+
+				<section>
+					<h2>node strengths</h2>
+
+					<p>Asynchronous workloads, coordination,<br />integrating multiple systems, <span class="focus-red">provisioning</span>.</p>
+				</section>
+
+				<section>
+					<h2>node weaknesses</h2>
+
+					<p><span class="focus-red">CPU intensive workloads</span>, Maths, hipster quotient</p>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## single-threaded pitfalls
+
+						```javascript
+						var handler = function(req, res) {
+
+						  req.records.forEach(function(record) {
+							  // iterating this array will block until done
+						  });
+
+						  res.writeHead(200, {'Content-Type': 'text/plain'});
+						  res.end('Success!\n');
+
+						};
+						```
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## single-threaded with helpers
+
+						```javascript
+						var async = require('async');
+
+						var handler = function(req, res) {
+
+						  async.each(req.records.forEach(function(record, next) {
+						    // when you're done with your processing, invoke next to continue
+						    next();
+						  }, function() {
+						    res.writeHead(200, {'Content-Type': 'text/plain'});
+						    res.end('Success!\n');
+						  });
+
+						};
+						```
+					</script>
+				</section>
+
+				<section>
+					<h2>A look to the past</h2>
+
+					<p>
+						Created by nodejitsu <span class="focus-red">December 2011</span><br />initially compute & storage on Rackspace.
+					</p>
+					<p class="fragment">
+						Vision: support for <span class="focus-red">multiple providers</span> and a <span class="focus-red">generalized interface</span>.
+					</p>
+				</section>
+
+				<section>
+					<h2>pkgcloud <= v0.6</h2>
+
+					<ul>
+						<li>Compute (Amazon, Rackspace, Azure, Joyent, limited Openstack)</li>
+						<li>Storage (Amazon, Rackspace, Azure)</li>
+						<li>Limited Database support (poorly defined)</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Enter Rackspace</h2>
+
+					<p>Committing to <span class="focus-red">an existing multi-cloud library</span> was better.</p>
+
+					<p class="fragment">
+						Examples:
+						<span class="focus-red">Apache jclouds</span>,
+						<span class="focus-red">fog</span>, and
+						<span class="focus-red">Apache Libcloud</span>.
+					</p>
+				</section>
+
+
+				<section>
+					<h2>Enter HP</h2>
+
+					<p>Originally offered <span class="fade-out">hpcloud-js</span>.
+					</p>
+
+					<p class="fragment">
+						<span class="focus-red">hpcloud-js</span> is now deprecated in favor of
+						<span class="focus-red">pkgcloud</span>
+					</p>
+				</section>
+
+				<section>
+					<h2>pkgcloud today (v1.0.x)</h2>
+
+					<p>
+						<span class="fragment">Compute</span><span class="fragment">, Storage</span><span class="fragment">, BlockStorage<span class="focus-red">*</span></span><span class="fragment">, DNS<span class="focus-red">*</span></span><span class="fragment">, Images<span class="focus-red">*</span></span><span class="fragment">, Databases<span class="focus-red">*</span></span><span class="fragment">, Networks<span class="focus-red">*</span> & Orchestration<span class="focus-red">*</span>...</span>
+					</p>
+
+					<p class="fragment">
+						<em><span class="focus-red">*</span> Beta Services,
+							<span class="focus-red">not fully generalized at this time</span>.</em>
+					</p>
+				</section>
+
+				<section>
+					<h2>OpenStack in pkgcloud</h2>
+
+					<ul>
+						<li>Compute (Nova v2)</li>
+						<li>Storage (Swift v1)</li>
+						<li>Database (Trove v1)</li>
+						<li>Block Storage (Cinder v1)</li>
+						<li>Orchestration (Heat v1)</li>
+						<li>Networks (Neutron v2)</li>
+					</ul>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						### pkgcloud client semantics
+
+						```javascript
+						var pkgcloud = require('pkgcloud');
+
+						var client = pkgcloud.compute.createClient({
+						  provider: 'openstack',
+						  username: 'my-user-name',
+						  password: 'my-password',
+						  authUrl: 'http://my-auth-endpoint'
+						});
+						```
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						### pkgcloud client alternative
+
+						```javascript
+						var pkgcloud = require('pkgcloud');
+
+						var client = pkgcloud.providers.openstack.compute.createClient({
+						  username: 'my-user-name',
+						  password: 'my-password',
+						  authUrl: 'http://my-auth-endpoint'
+						});
+						```
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						### compute provider
+
+						- Server
+						- Flavor
+						- Image
+					</script>
+				</section>
+
+        <section>
+          <h3>Compute example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### storage provider
+
+            - Container
+            - File
+          </script>
+        </section>
+
+        <section>
+          <h3>Storage example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### block storage provider
+
+            - Volume
+            - Snapshot
+          </script>
+        </section>
+
+        <section>
+          <h3>Block Storage example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### database provider
+
+            - Instance
+            - Flavor
+            - Image
+            - User
+          </script>
+        </section>
+
+        <section>
+          <h3>database example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### orchestration provider
+
+            - Stack
+            - Resource
+          </script>
+        </section>
+
+        <section>
+          <h3>orchestration example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### network provider
+
+            - Network
+            - Port
+            - Subnet
+          </script>
+        </section>
+
+        <section>
+          <h3>network example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section>
+          <h3>orchestration example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### network provider
+
+            - Network
+            - Port
+            - Subnet
+          </script>
+        </section>
+
+        <section>
+          <h3>network example</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section>
+          <h3>practical examples</h3>
+
+          <a href="#">Link to code</a>
+        </section>
+
+        <section>
+          <h2>Not yet implmented</h2>
+
+          <ul>
+            <li>Load Balancers</li>
+            <li>Images</li>
+            <li>Full Identity</li>
+            <li>Telemetry</li>
+            <li>...</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>The Future?</h3>
+          <p>Where does pkgcloud go from here?</p>
+
+          <ul>
+            <li>More providers (Google?)</li>
+            <li>Modular architecture</li>
+            <li>Broader service support</li>
+            <li>More comprehensive tests</li>
+            <li>Logo, website?</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Contributing!</h2>
+          <p>Or we need your help...</p>
+          <p class="fragment"><span class="focus-red">#pkgcloud</span> on Freenode IRC, <a href="https://github.com/pkgcloud/pkgcloud">github.com/pkgcloud/pkgcloud</a> on Github</p>
+        </section>
+
+				<section>
+					<h1>Thanks!</h1>
+
+					<h5><a href="http://rawgit.com/kenperkins/introducing-pkgcloud-for-openstack/master/index.html">this deck</a> | <a href="https://github.com/kenperkins/introducing-pkgcloud-for-openstack/">github</a></h5>
+					<p><a href="https://twitter.com/kenperkins">@kenperkins</a></p>
+					<p><a href="https://twitter.com/phanirajuyn">@phanirajuyn</a></p>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
