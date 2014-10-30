@@ -96,7 +96,7 @@
 				<section>
 					<h2>node weaknesses</h2>
 
-					<p><span class="focus-red">CPU intensive workloads</span>, Maths, hipster quotient</p>
+					<p><span class="focus-red">CPU intensive workloads</span>, Maths, non-intuitive patterns</p>
 				</section>
 
 				<section data-markdown>
@@ -127,7 +127,7 @@
 
 						var handler = function(req, res) {
 
-						  async.each(req.records.forEach(function(record, next) {
+						  async.each(req.records, function(record, next) {
 						    // when you're done with your processing, invoke next to continue
 						    next();
 						  }, function() {
@@ -191,7 +191,7 @@
 					<h2>pkgcloud today (v1.0.x)</h2>
 
 					<p>
-						<span class="fragment">Compute</span><span class="fragment">, Storage</span><span class="fragment">, BlockStorage<span class="focus-red">*</span></span><span class="fragment">, DNS<span class="focus-red">*</span></span><span class="fragment">, Images<span class="focus-red">*</span></span><span class="fragment">, Databases<span class="focus-red">*</span></span><span class="fragment">, Networks<span class="focus-red">*</span> & Orchestration<span class="focus-red">*</span>...</span>
+						<span class="fragment">Compute</span><span class="fragment">, Storage</span><span class="fragment">, BlockStorage<span class="focus-red">*</span></span><span class="fragment">, DNS<span class="focus-red">*</span></span><span class="fragment">, Databases<span class="focus-red">*</span></span><span class="fragment">,<br />Networks<span class="focus-red">*</span> & Orchestration<span class="focus-red">*</span>...</span>
 					</p>
 
 					<p class="fragment">
@@ -246,20 +246,20 @@
 					</script>
 				</section>
 
-				<section data-markdown>
-					<script type="text/template">
-						### compute provider
-
-						- Server
-						- Flavor
-						- Image
-					</script>
-				</section>
-
         <section>
-          <h3>Compute example</h3>
+          <h3>compute provider</h3>
 
-          <a href="https://github.com/pkgcloud/pkgcloud/blob/master/docs/providers/openstack/getting-started-compute.md">Link to code</a>
+          <ul>
+            <li>Server</li>
+            <li>Flavor</li>
+            <li>Image</li>
+          </ul>
+
+          <p class="fragment">
+            <a
+              href="https://github.com/pkgcloud/pkgcloud/blob/master/docs/providers/openstack/getting-started-compute.md">Link
+              to code</a>
+          </p>
         </section>
 
         <section data-markdown>
