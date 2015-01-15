@@ -55,89 +55,19 @@
 					<h3>OpenStack SDK for node.js</h3>
 					<p>
 						<small>
-							<a href="https://github.com/kenperkins">Ken Perkins</a> | Rackspace | <a href="http://twitter.com/kenperkins">@kenperkins</a><br/>
-							<a href="https://github.com/phanatic">Phani Raj</a> | HP Cloud | <a href="http://twitter.com/phanirajuyn">@phanirajuyn</a></small>
+							<a href="https://github.com/phanatic">Phani Raj</a> | HP Cloud | <a href="mailto:phani.raj@hp.com">phani.raj@hp.com</a> | <a href="http://twitter.com/phanirajuyn">@phanirajuyn</a></small>
 					</p>
 				</section>
 
 				<section>
-					<h2>node.js</h2>
-					<p>Platform built on Chrome's V8 JavaScript runtime.</p>
-					<blockquote class="fragment">...uses an event-driven, non-blocking I/O model that makes it lightweight and efficient...</blockquote>
-				</section>
+					<h2>What is pkgcloud?</h2>
 
-				<section>
-					<h2>node strengths</h2>
-
-					<p>Asynchronous workloads, coordination,<br />integrating multiple systems, <span class="focus-red">provisioning</span>.</p>
-				</section>
-
-				<section>
-					<h2>node weaknesses</h2>
-
-					<p><span class="focus-red">CPU intensive workloads</span>, Maths, non-intuitive patterns</p>
-				</section>
-
-				<section data-markdown>
-					<script type="text/template">
-						## Hello World in node.js
-
-						```javascript
-						var http = require('http');
-
-						var handler = function (req, res) {
-						  res.writeHead(200, {'Content-Type': 'text/plain'});
-						  res.end('Hello World\n');
-						}
-
-						var server = http.createServer(handler);
-
-						server.listen(1337, '127.0.0.1');
-
-						console.log('Server running at http://127.0.0.1:1337/');
-						```
-					</script>
-				</section>
-
-				<section data-markdown>
-					<script type="text/template">
-						## single-threaded pitfalls
-
-						```javascript
-						var handler = function(req, res) {
-
-						  req.records.forEach(function(record) {
-							  // iterating this array will block until done
-						  });
-
-						  res.writeHead(200, {'Content-Type': 'text/plain'});
-						  res.end('Success!\n');
-
-						};
-						```
-					</script>
-				</section>
-
-				<section data-markdown>
-					<script type="text/template">
-						## single-threaded with helpers
-
-						```javascript
-						var async = require('async');
-
-						var handler = function(req, res) {
-
-						  async.each(req.records, function(record, next) {
-						    // when you're done with your processing, invoke next to continue
-						    next();
-						  }, function() {
-						    res.writeHead(200, {'Content-Type': 'text/plain'});
-						    res.end('Success!\n');
-						  });
-
-						};
-						```
-					</script>
+					<p>
+						pkgcloud is a standard library for node.js that abstracts away differences among multiple cloud providers.
+					</p>
+					<p class="fragment">
+						Vision: support for <span class="focus-red">multiple providers</span> and a <span class="focus-red">generalized interface</span>.
+					</p>
 				</section>
 
 				<section>
@@ -160,20 +90,6 @@
 						<li>Limited Database support (poorly defined)</li>
 					</ul>
 				</section>
-
-				<section>
-					<h2>Enter Rackspace</h2>
-
-					<p>Committing to <span class="focus-red">an existing multi-cloud library</span> was better.</p>
-
-					<p class="fragment">
-						Examples:
-						<span class="focus-red">Apache jclouds</span>,
-						<span class="focus-red">fog</span>, and
-						<span class="focus-red">Apache Libcloud</span>.
-					</p>
-				</section>
-
 
 				<section>
 					<h2>Enter HP</h2>
@@ -315,9 +231,9 @@
 				<section>
 					<h1>Thanks & Q & A!</h1>
 
-					<h5><a href="http://rawgit.com/kenperkins/introducing-pkgcloud-for-openstack/master/index.html">this deck</a> | <a href="https://github.com/kenperkins/introducing-pkgcloud-for-openstack/">github</a></h5>
-					<p><a href="https://twitter.com/kenperkins">@kenperkins</a></p>
-					<p><a href="https://twitter.com/phanirajuyn">@phanirajuyn</a></p>
+					<h5><a href="http://rawgit.com/kenperkins/introducing-pkgcloud-for-openstack/master/index.html">this deck</a>  | <a href="https://github.com/kenperkins/introducing-pkgcloud-for-openstack/">github</a></h5>
+
+					<p><a href="mailto:phani.raj@hp.com">phani.raj@hp.com</a> | <a href="https://twitter.com/phanirajuyn">@phanirajuyn</a></p>
 				</section>
 
 			</div>
